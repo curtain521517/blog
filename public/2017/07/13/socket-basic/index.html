@@ -1,0 +1,1333 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="socket,网络," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="socketsocket到底是什么？简单来说，socket就是进程通讯的一种方式，调用网络库的一些API函数实现分布在不同主机的相关进程之间的数据交换。从编程语言角度来看，socket是一个无符号整型变量，用来标识一个通信进程  IP地址：即依照TCP/IP协议分配给本地主机的网络地址，两个进程要通讯，任一进程首先要知道通讯对方的位置，即对方的IP。 端口号：用来辨别本地通讯进程，一个本地的进程在">
+<meta name="keywords" content="socket,网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="socket">
+<meta property="og:url" content="http://yoursite.com/2017/07/13/socket-basic/index.html">
+<meta property="og:site_name" content="小海">
+<meta property="og:description" content="socketsocket到底是什么？简单来说，socket就是进程通讯的一种方式，调用网络库的一些API函数实现分布在不同主机的相关进程之间的数据交换。从编程语言角度来看，socket是一个无符号整型变量，用来标识一个通信进程  IP地址：即依照TCP/IP协议分配给本地主机的网络地址，两个进程要通讯，任一进程首先要知道通讯对方的位置，即对方的IP。 端口号：用来辨别本地通讯进程，一个本地的进程在">
+<meta property="og:updated_time" content="2017-07-13T11:45:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="socket">
+<meta name="twitter:description" content="socketsocket到底是什么？简单来说，socket就是进程通讯的一种方式，调用网络库的一些API函数实现分布在不同主机的相关进程之间的数据交换。从编程语言角度来看，socket是一个无符号整型变量，用来标识一个通信进程  IP地址：即依照TCP/IP协议分配给本地主机的网络地址，两个进程要通讯，任一进程首先要知道通讯对方的位置，即对方的IP。 端口号：用来辨别本地通讯进程，一个本地的进程在">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/13/socket-basic/"/>
+
+
+
+
+
+  <title>socket | 小海</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小海</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/13/socket-basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xufan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17564857?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小海">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">socket</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-13T13:13:43+08:00">
+                2017-07-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="socket"><a href="#socket" class="headerlink" title="socket"></a>socket</h2><h4 id="socket到底是什么？"><a href="#socket到底是什么？" class="headerlink" title="socket到底是什么？"></a>socket到底是什么？</h4><p>简单来说，socket就是进程通讯的一种方式，调用网络库的一些API函数实现分布在不同主机的相关进程之间的数据交换。<br>从编程语言角度来看，socket是一个无符号整型变量，用来标识一个通信进程</p>
+<ol>
+<li><strong>IP地址：</strong>即依照TCP/IP协议分配给本地主机的网络地址，两个进程要通讯，任一进程首先要知道通讯对方的位置，即对方的IP。</li>
+<li><strong>端口号：</strong>用来辨别本地通讯进程，一个本地的进程在通讯时均会占用一个端口号，不同的进程端口号不同，因此在通讯前必须要分配一个没有被访问的端口号。</li>
+<li><strong>连接：</strong>指两个进程间的通讯链路。</li>
+<li><strong>半相关：</strong>网络中用一个三元组可以在全局唯一标志一个进程：（协议，本地地址，本地端口号）这样一个三元组，叫做一个半相关,它指定连接的每半部分。</li>
+<li><strong>全相关：</strong>一个完整的网间进程通信需要由两个进程组成，并且只能使用同一种高层协议。也就是说，不可能通信的一端用TCP协议，而另一端用UDP协议。因此一个完整的网间通信需要一个五元组来标识：（协议，本地地址，本地端口号，远地地址，远地端口号）这样一个五元组，叫做一个相关（association），即两个协议相同的半相关才能组合成一个合适的相关，或完全指定组成一连接。</li>
+</ol>
+<h4 id="socket如何使用"><a href="#socket如何使用" class="headerlink" title="socket如何使用?"></a>socket如何使用?</h4><p>服务端：建立监听套接字，绑定地址和端口号，开始监听，等待客户机连接，连接后会生成一个新的套接字，然后读写信息<br>客户端：建立套接字，然后申请连接服务器，连上服务器后开始读写信息</p>
+<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><p>服务端</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+
+
+int main(int argc, const char * argv[]) {
+
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(12345);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;server_addr.sin_zero, 8);
+
+    // 创建socket
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }else {
+        printf(&quot;socket success\n&quot;);
+    }
+
+    int bind_result = bind(server_socket, (struct sockaddr *)&amp;server_addr, sizeof(server_addr));
+    if (bind_result == -1) {
+        perror(&quot;bind error&quot;);
+        return 1;
+    }else {
+        printf(&quot;bind success\n&quot;);
+    }
+
+    if (listen(server_socket, 5) == -1) {
+        perror(&quot;listen error&quot;);
+        return 1;
+    }else {
+        printf(&quot;listen...\n&quot;);
+    }
+
+    struct sockaddr_in client_address;
+    socklen_t address_len;
+    int client_socket = accept(server_socket, (struct sockaddr*)&amp;client_address, &amp;address_len);
+    if (client_socket == -1) {
+        perror(&quot;accept error&quot;);
+        return -1;
+    }else {
+        printf(&quot;accept success...\n&quot;);
+    }
+
+    char recv_msg[1024]={0};
+    char send_msg[1024]={0};
+
+    while (1) {
+        bzero(recv_msg, 1024);
+        bzero(send_msg, 1024);
+
+        printf(&quot;reply:\n&quot;);
+        scanf(&quot;%s&quot;,send_msg);
+        send(client_socket, send_msg, 1024, 0);
+
+        long byte_num = recv(client_socket,recv_msg,1024,0);
+        recv_msg[byte_num]=&apos;\0&apos;;
+        printf(&quot;client said:%s\n&quot;,recv_msg);
+    }
+
+    return 0;
+}
+</code></pre><p>客户端</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+
+
+int main(int argc, const char * argv[]) {
+
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(12345);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;server_addr.sin_zero, 8);
+
+    // 创建socket
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }else {
+        printf(&quot;socket success\n&quot;);
+    }
+
+    char recv_msg[1024]={0};
+    char send_msg[1024]={0};
+
+    if (connect(server_socket, (struct sockaddr*)&amp;server_addr, sizeof(struct sockaddr_in)) != 0) {
+        perror(&quot;connect failed&quot;);
+        return 1;
+    }else {
+        printf(&quot;connect success\n&quot;);
+    }
+
+    while (1) {
+        bzero(recv_msg, 1024);
+        bzero(send_msg, 1024);
+
+        long byte_num = recv(server_socket,recv_msg,1024,0);
+        recv_msg[byte_num]=&apos;\0&apos;;
+        printf(&quot;server said:%s\n&quot;,recv_msg);
+
+        printf(&quot;reply:&quot;);
+        scanf(&quot;%s&quot;,send_msg);
+        send(server_socket, send_msg, 1024, 0);
+
+    }
+
+    return 0;
+}
+</code></pre><h4 id="select的使用"><a href="#select的使用" class="headerlink" title="select的使用"></a>select的使用</h4><p>select这个系统调用，是一种多路复用IO方案，可以同时对多个文件描述符进行监控，从而知道哪些文件描述符可读，可写或者出错，不过select方法是阻塞的，可以设定超时时间。  </p>
+<pre><code>1. 创建一个fd_set变量（fd_set实为包含了一个整数数组的结构体），用来存放所有的待检查的文件描述符  
+2.清空fd_set变量，并将需要检查的所有文件描述符加入fd_set  
+3.调用select。若返回-1，则说明出错;返回0,则说明超时，返回正数，则为发生状态变化的文件描述符的个数  
+4.若select返回大于0,则依次查看哪些文件描述符变的可读，并对它们进行处理  
+5.返回步骤2，开始新一轮的检测  
+</code></pre><p>服务端</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#define BACKLOG 5 //完成三次握手但没有accept的队列的长度
+#define CONCURRENT_MAX 8 //应用层同时可以处理的连接
+#define SERVER_PORT 11332
+#define BUFFER_SIZE 1024
+#define QUIT_CMD &quot;.quit&quot;
+int client_fds[CONCURRENT_MAX];
+
+int main()
+{
+    char input_msg[BUFFER_SIZE];
+    char recv_msg[BUFFER_SIZE];
+
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(SERVER_PORT);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;server_addr.sin_zero, 8);
+
+    // 创建socket
+    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_fd == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }else {
+        printf(&quot;socket success\n&quot;);
+    }
+
+    int bind_result = bind(server_sock_fd, (struct sockaddr *)&amp;server_addr, sizeof(server_addr));
+    if (bind_result == -1) {
+        perror(&quot;bind error&quot;);
+        return 1;
+    }else {
+        printf(&quot;bind success\n&quot;);
+    }
+
+    if (listen(server_sock_fd, 5) == -1) {
+        perror(&quot;listen error&quot;);
+        return 1;
+    }else {
+        printf(&quot;listen...\n&quot;);
+    }
+
+    //fd set
+    fd_set server_fd_set;
+    int max_fd = -1;
+    struct timeval tv;
+    tv.tv_sec = 20;
+    tv.tv_usec = 0;
+    while (1) {
+        FD_ZERO(&amp;server_fd_set);
+        //标准输入
+        FD_SET(STDIN_FILENO, &amp;server_fd_set);
+        if (max_fd &lt; STDIN_FILENO) {
+            max_fd = STDIN_FILENO;
+        }
+
+        //服务器端socket
+        FD_SET(server_sock_fd, &amp;server_fd_set);
+        if (max_fd &lt; server_sock_fd) {
+            max_fd = server_sock_fd;
+        }
+
+        //客户端连接
+        for (int i = 0; i &lt; CONCURRENT_MAX; i++) {
+            if (client_fds[i]!=0) {
+                FD_SET(client_fds[i], &amp;server_fd_set);
+
+                if (max_fd &lt; client_fds[i]) {
+                    max_fd = client_fds[i];
+                }
+            }
+        }
+
+        int ret = select(max_fd+1, &amp;server_fd_set, NULL, NULL, &amp;tv);
+        if (ret &lt; 0) {
+            perror(&quot;select 出错\n&quot;);
+            continue;
+        }else if(ret == 0){
+            printf(&quot;select 超时\n&quot;);
+            continue;
+        }else{
+            //ret为未状态发生变化的文件描述符的个数
+            if (FD_ISSET(STDIN_FILENO, &amp;server_fd_set)) {
+                //标准输入
+                bzero(input_msg, BUFFER_SIZE);
+                fgets(input_msg, BUFFER_SIZE, stdin);
+                //输入 &quot;.quit&quot; 则退出服务器
+                if (strcmp(input_msg, QUIT_CMD) == 0) {
+                    exit(0);
+                }
+                for (int i=0; i&lt;CONCURRENT_MAX; i++) {
+                    if (client_fds[i]!=0) {
+                        send(client_fds[i], input_msg, BUFFER_SIZE, 0);
+                    }
+                }
+            }
+            if (FD_ISSET(server_sock_fd, &amp;server_fd_set)) {
+                //有新的连接请求
+                struct sockaddr_in client_address;
+                socklen_t address_len;
+                int client_socket_fd = accept(server_sock_fd, (struct sockaddr *)&amp;client_address, &amp;address_len);
+                if (client_socket_fd &gt; 0) {
+                    int index = -1;
+                    for (int i = 0; i &lt; CONCURRENT_MAX; i++) {
+                        if (client_fds[i] == 0) {
+                            index = i;
+                            client_fds[i] = client_socket_fd;
+                            break;
+                        }
+                    }
+                    if (index &gt;= 0) {
+                        printf(&quot;新客户端(%d)加入成功 %s:%d \n&quot;,index,inet_ntoa(client_address.sin_addr),ntohs(client_address.sin_port));
+                    }else{
+                        bzero(input_msg, BUFFER_SIZE);
+                        strcpy(input_msg, &quot;服务器加入的客户端数达到最大值,无法加入!\n&quot;);
+                        send(client_socket_fd, input_msg, BUFFER_SIZE, 0);
+                        printf(&quot;客户端连接数达到最大值，新客户端加入失败 %s:%d \n&quot;,inet_ntoa(client_address.sin_addr),ntohs(client_address.sin_port));
+                    }
+                }
+            }
+            for (int i = 0; i &lt;CONCURRENT_MAX; i++) {
+                if (client_fds[i]!=0) {
+                    if (FD_ISSET(client_fds[i], &amp;server_fd_set)) {
+                        //处理某个客户端过来的消息
+                        bzero(recv_msg, BUFFER_SIZE);
+                        long byte_num = recv(client_fds[i],recv_msg,BUFFER_SIZE,0);
+                        if (byte_num &gt; 0) {
+                            if (byte_num &gt; BUFFER_SIZE) {
+                                byte_num = BUFFER_SIZE;
+                            }
+                            recv_msg[byte_num] = &apos;\0&apos;;
+                            printf(&quot;客户端(%d):%s\n&quot;,i,recv_msg);
+                        }else if(byte_num &lt; 0){
+                            printf(&quot;从客户端(%d)接受消息出错.\n&quot;,i);
+                        }else{
+                            FD_CLR(client_fds[i], &amp;server_fd_set);
+                            client_fds[i] = 0;
+                            printf(&quot;客户端(%d)退出了\n&quot;,i);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+    return 0;
+}
+</code></pre><p>客户端</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define BUFFER_SIZE 1024
+
+int main (int argc, const char * argv[])
+{
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(11332);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;(server_addr.sin_zero),8);
+
+    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_fd == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }
+    char recv_msg[BUFFER_SIZE];
+    char input_msg[BUFFER_SIZE];
+
+    if (connect(server_sock_fd, (struct sockaddr *)&amp;server_addr, sizeof(struct sockaddr_in))==0) {
+        fd_set client_fd_set;
+        struct timeval tv;
+        tv.tv_sec = 20;
+        tv.tv_usec = 0;
+
+
+        while (1) {
+            FD_ZERO(&amp;client_fd_set);
+            FD_SET(STDIN_FILENO, &amp;client_fd_set);
+            FD_SET(server_sock_fd, &amp;client_fd_set);
+
+            int ret = select(server_sock_fd + 1, &amp;client_fd_set, NULL, NULL, &amp;tv);
+            if (ret &lt; 0 ) {
+                printf(&quot;select 出错!\n&quot;);
+                continue;
+            }else if(ret ==0){
+                printf(&quot;select 超时!\n&quot;);
+                continue;
+            }else{
+                if (FD_ISSET(STDIN_FILENO, &amp;client_fd_set)) {
+                    bzero(input_msg, BUFFER_SIZE);
+                    fgets(input_msg, BUFFER_SIZE, stdin);
+                    if (send(server_sock_fd, input_msg, BUFFER_SIZE, 0) == -1) {
+                        perror(&quot;发送消息出错!\n&quot;);
+                    }
+                }
+
+                if (FD_ISSET(server_sock_fd, &amp;client_fd_set)) {
+                    bzero(recv_msg, BUFFER_SIZE);
+                    long byte_num = recv(server_sock_fd,recv_msg,BUFFER_SIZE,0);
+                    if (byte_num &gt; 0) {
+                        if (byte_num &gt; BUFFER_SIZE) {
+                            byte_num = BUFFER_SIZE;
+                        }
+                        recv_msg[byte_num] = &apos;\0&apos;;
+                        printf(&quot;服务器:%s\n&quot;,recv_msg);
+                    }else if(byte_num &lt; 0){
+                        printf(&quot;接受消息出错!\n&quot;);
+                    }else{
+                        printf(&quot;服务器端退出!\n&quot;);
+                        exit(0);
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    return 0;
+}
+</code></pre><h4 id="kqueue"><a href="#kqueue" class="headerlink" title="kqueue"></a>kqueue</h4><p>kqueue使用事件触发的机制<br>服务端</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/event.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/time.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#define BACKLOG 5 //完成三次握手但没有accept的队列的长度
+#define CONCURRENT_MAX 8 //应用层同时可以处理的连接
+#define SERVER_PORT 11332
+#define BUFFER_SIZE 1024
+#define QUIT_CMD &quot;.quit&quot;
+int client_fds[CONCURRENT_MAX];
+struct kevent events[10];//CONCURRENT_MAX + 2
+int main (int argc, const char * argv[])
+{
+    char input_msg[BUFFER_SIZE];
+    char recv_msg[BUFFER_SIZE];
+    //本地地址
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(SERVER_PORT);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;(server_addr.sin_zero),8);
+    //创建socket
+    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_fd == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }
+    //绑定socket
+    int bind_result = bind(server_sock_fd, (struct sockaddr *)&amp;server_addr, sizeof(server_addr));
+    if (bind_result == -1) {
+        perror(&quot;bind error&quot;);
+        return 1;
+    }
+    //listen
+    if (listen(server_sock_fd, BACKLOG) == -1) {
+        perror(&quot;listen error&quot;);
+        return 1;
+    }
+    struct timespec timeout = {10,0};
+    //kqueue
+    int kq = kqueue();
+    if (kq == -1) {
+        perror(&quot;创建kqueue出错!\n&quot;);
+        exit(1);
+    }
+    struct kevent event_change;
+    EV_SET(&amp;event_change, STDIN_FILENO, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+    EV_SET(&amp;event_change, server_sock_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+    while (1) {
+        int ret = kevent(kq, NULL, 0, events, 10, &amp;timeout);
+        if (ret &lt; 0) {
+            printf(&quot;kevent 出错!\n&quot;);
+            continue;
+        }else if(ret == 0){
+            printf(&quot;kenvent 超时!\n&quot;);
+            continue;
+        }else{
+            //ret &gt; 0 返回事件放在events中
+            for (int i = 0; i &lt; ret; i++) {
+                struct kevent current_event = events[i];
+                //kevent中的ident就是文件描述符
+                if (current_event.ident == STDIN_FILENO) {
+                    //标准输入
+                    bzero(input_msg, BUFFER_SIZE);
+                    fgets(input_msg, BUFFER_SIZE, stdin);
+                    //输入 &quot;.quit&quot; 则退出服务器
+                    if (strcmp(input_msg, QUIT_CMD) == 0) {
+                        exit(0);
+                    }
+                    for (int i=0; i&lt;CONCURRENT_MAX; i++) {
+                        if (client_fds[i]!=0) {
+                            send(client_fds[i], input_msg, BUFFER_SIZE, 0);
+                        }
+                    }
+                }else if(current_event.ident == server_sock_fd){
+                    //有新的连接请求
+                    struct sockaddr_in client_address;
+                    socklen_t address_len;
+                    int client_socket_fd = accept(server_sock_fd, (struct sockaddr *)&amp;client_address, &amp;address_len);
+                    if (client_socket_fd &gt; 0) {
+                        int index = -1;
+                        for (int i = 0; i &lt; CONCURRENT_MAX; i++) {
+                            if (client_fds[i] == 0) {
+                                index = i;
+                                client_fds[i] = client_socket_fd;
+                                break;
+                            }
+                        }
+                        if (index &gt;= 0) {
+                            EV_SET(&amp;event_change, client_socket_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+                            kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+                            printf(&quot;新客户端(fd = %d)加入成功 %s:%d \n&quot;,client_socket_fd,inet_ntoa(client_address.sin_addr),ntohs(client_address.sin_port));
+                        }else{
+                            bzero(input_msg, BUFFER_SIZE);
+                            strcpy(input_msg, &quot;服务器加入的客户端数达到最大值,无法加入!\n&quot;);
+                            send(client_socket_fd, input_msg, BUFFER_SIZE, 0);
+                            printf(&quot;客户端连接数达到最大值，新客户端加入失败 %s:%d \n&quot;,inet_ntoa(client_address.sin_addr),ntohs(client_address.sin_port));
+                        }
+                    }
+                }else{
+                    //处理某个客户端过来的消息
+                    bzero(recv_msg, BUFFER_SIZE);
+                    long byte_num = recv((int)current_event.ident,recv_msg,BUFFER_SIZE,0);
+                    if (byte_num &gt; 0) {
+                        if (byte_num &gt; BUFFER_SIZE) {
+                            byte_num = BUFFER_SIZE;
+                        }
+                        recv_msg[byte_num] = &apos;\0&apos;;
+                        printf(&quot;客户端(fd = %d):%s\n&quot;,(int)current_event.ident,recv_msg);
+                    }else if(byte_num &lt; 0){
+                        printf(&quot;从客户端(fd = %d)接受消息出错.\n&quot;,(int)current_event.ident);
+                    }else{
+                        EV_SET(&amp;event_change, current_event.ident, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+                        kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+                        close((int)current_event.ident);
+                        for (int i = 0; i &lt; CONCURRENT_MAX; i++) {
+                            if (client_fds[i] == (int)current_event.ident) {
+                                client_fds[i] = 0;
+                                break;
+                            }
+                        }
+                        printf(&quot;客户端(fd = %d)退出了\n&quot;,(int)current_event.ident);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+</code></pre><p>客户端</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/event.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/time.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+
+
+#define BUFFER_SIZE 1024
+struct kevent events[2];
+
+int main (int argc, const char * argv[])
+{
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(11332);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;(server_addr.sin_zero),8);
+
+    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_fd == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }
+    char recv_msg[BUFFER_SIZE];
+    char input_msg[BUFFER_SIZE];
+
+    if (connect(server_sock_fd, (struct sockaddr *)&amp;server_addr, sizeof(struct sockaddr_in))==0) {
+
+        int kq = kqueue();
+        if (kq == -1) {
+            perror(&quot;创建kqueue出错!\n&quot;);
+            exit(1);
+        }
+
+        struct timespec timeout = {10,0};
+        struct kevent event_change;
+        EV_SET(&amp;event_change, STDIN_FILENO, EVFILT_READ, EV_ADD, 0, 0, NULL);
+        kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+        EV_SET(&amp;event_change, server_sock_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+        kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+
+        while (1) {
+
+            int ret = kevent(kq, NULL, 0, events, 2, &amp;timeout);
+            if (ret &lt; 0 ) {
+                printf(&quot;kevent 出错!\n&quot;);
+                continue;
+            }else if(ret ==0){
+                printf(&quot;kevent 超时!\n&quot;);
+                continue;
+            }else{
+                struct kevent current_event = events[0];
+                if (current_event.ident == STDIN_FILENO) {
+                    bzero(input_msg, BUFFER_SIZE);
+                    fgets(input_msg, BUFFER_SIZE, stdin);
+                    if (send(server_sock_fd, input_msg, BUFFER_SIZE, 0) == -1) {
+                        perror(&quot;发送消息出错!\n&quot;);
+                    }
+                }
+
+                else if (current_event.ident == server_sock_fd) {
+                    bzero(recv_msg, BUFFER_SIZE);
+                    long byte_num = recv(server_sock_fd,recv_msg,BUFFER_SIZE,0);
+                    if (byte_num &gt; 0) {
+                        if (byte_num &gt; BUFFER_SIZE) {
+                            byte_num = BUFFER_SIZE;
+                        }
+                        recv_msg[byte_num] = &apos;\0&apos;;
+                        printf(&quot;服务器:%s\n&quot;,recv_msg);
+                    }else if(byte_num &lt; 0){
+                        printf(&quot;接受消息出错!\n&quot;);
+                    }else{
+                        printf(&quot;服务器端退出!\n&quot;);
+                        exit(0);
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    return 0;
+}
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/socket/" rel="tag"># socket</a>
+          
+            <a href="/tags/网络/" rel="tag"># 网络</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/17564857?v=3&s=460"
+               alt="xufan" />
+          <p class="site-author-name" itemprop="name">xufan</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/curtain521517" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xufan123123" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                  csdn
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#socket"><span class="nav-number">1.</span> <span class="nav-text">socket</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#socket到底是什么？"><span class="nav-number">1.0.1.</span> <span class="nav-text">socket到底是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#socket如何使用"><span class="nav-number">1.0.2.</span> <span class="nav-text">socket如何使用?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例代码"><span class="nav-number">1.0.3.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#select的使用"><span class="nav-number">1.0.4.</span> <span class="nav-text">select的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#kqueue"><span class="nav-number">1.0.5.</span> <span class="nav-text">kqueue</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xufan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
