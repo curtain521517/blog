@@ -1,0 +1,1018 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="socket,HTTP,网络," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="HTTPHTTP协议http协议是应用层协议，它建立在传输层之上,默认端口80，客户端向服务器发送请求，服务器收到请求之后，对其内容进行解析并向客户端回送一个响应 HTTP请求报文HTTP请求分三个部份：状态行，请求头，消息主体。类似下在这样： &amp;lt;method&amp;gt; &amp;lt;request-URL&amp;gt; &amp;lt;version&amp;gt; &amp;lt;headers&amp;gt; /r/n(这是一个空">
+<meta name="keywords" content="socket,HTTP,网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP服务 socket的简单实现">
+<meta property="og:url" content="http://yoursite.com/2017/07/14/HTTP协议/index.html">
+<meta property="og:site_name" content="小海">
+<meta property="og:description" content="HTTPHTTP协议http协议是应用层协议，它建立在传输层之上,默认端口80，客户端向服务器发送请求，服务器收到请求之后，对其内容进行解析并向客户端回送一个响应 HTTP请求报文HTTP请求分三个部份：状态行，请求头，消息主体。类似下在这样： &amp;lt;method&amp;gt; &amp;lt;request-URL&amp;gt; &amp;lt;version&amp;gt; &amp;lt;headers&amp;gt; /r/n(这是一个空">
+<meta property="og:updated_time" content="2017-07-17T06:07:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP服务 socket的简单实现">
+<meta name="twitter:description" content="HTTPHTTP协议http协议是应用层协议，它建立在传输层之上,默认端口80，客户端向服务器发送请求，服务器收到请求之后，对其内容进行解析并向客户端回送一个响应 HTTP请求报文HTTP请求分三个部份：状态行，请求头，消息主体。类似下在这样： &amp;lt;method&amp;gt; &amp;lt;request-URL&amp;gt; &amp;lt;version&amp;gt; &amp;lt;headers&amp;gt; /r/n(这是一个空">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/14/HTTP协议/"/>
+
+
+
+
+
+  <title>HTTP服务 socket的简单实现 | 小海</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小海</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/14/HTTP协议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xufan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17564857?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小海">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP服务 socket的简单实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-14T15:35:37+08:00">
+                2017-07-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h2><h3 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h3><p>http协议是应用层协议，它建立在传输层之上,默认端口80，客户端向服务器发送请求，服务器收到请求之后，对其内容进行解析并向客户端回送一个响应</p>
+<h4 id="HTTP请求报文"><a href="#HTTP请求报文" class="headerlink" title="HTTP请求报文"></a>HTTP请求报文</h4><p>HTTP请求分三个部份：状态行，请求头，消息主体。类似下在这样：</p>
+<pre><code>&lt;method&gt; &lt;request-URL&gt; &lt;version&gt;
+&lt;headers&gt;
+/r/n(这是一个空行)
+&lt;entity-body&gt;
+</code></pre><p>HTTP定义了与服务器交互的不同方法，最基本四种GET,POST,PUT,DELETE。URL的全称是资源描述符，可以这样认为：一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET,POST,PUT,DELETE,分别对应这个资源的查，增，改，删4个操作，</p>
+<p>GET请求报文示例：</p>
+<pre><code>GET /books/?sex=man&amp;name=Professional HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)
+Gecko/20050225 Firefox/1.0.1
+Connection: Keep-Alive
+</code></pre><p>POST请求表示可能改变服务器上的资源的请求：</p>
+<pre><code>POST / HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)
+Gecko/20050225 Firefox/1.0.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 40
+Connection: Keep-Alive
+
+sex=man&amp;name=Professional  
+</code></pre><h4 id="HTTP响应报文"><a href="#HTTP响应报文" class="headerlink" title="HTTP响应报文"></a>HTTP响应报文</h4><p>HTTP响应与HTTP请求相似，也由3个部分构成，分别是：</p>
+<ul>
+<li>状态行</li>
+<li>响应头(Response Header)</li>
+<li>/r/n (空行)</li>
+<li>响应正文</li>
+</ul>
+<p>状态行由协议版本、数字形式的状态代码、及相应的状态描述，各元素之间以空格分隔。<br>常见的状态码有如下几种：</p>
+<ul>
+<li>200 OK 客户端请求成功</li>
+<li>301 Moved Permanently 请求永久重定向</li>
+<li>302 Moved Temporarily 请求临时重定向</li>
+<li>304 Not Modified 文件未修改，可以直接使用缓存的文件。</li>
+<li>400 Bad Request 由于客户端请求有语法错误，不能被服务器所理解。</li>
+<li>401 Unauthorized 请求未经授权。这个状态代码必须和WWW-Authenticate报头域一起使用</li>
+<li>403 Forbidden 服务器收到请求，但是拒绝提供服务。服务器通常会在响应正文中给出不提供服务的原因</li>
+<li>404 Not Found 请求的资源不存在，例如，输入了错误的URL</li>
+<li>500 Internal Server Error 服务器发生不可预期的错误，导致无法完成客户端的请求。</li>
+<li>503 Service Unavailable 服务器当前不能够处理客户端的请求，在一段时间之后，服务器可能会恢复正常。</li>
+</ul>
+<p>下面是一个HTTP响应的例子</p>
+<pre><code>HTTP/1.0 200 OK 
+Content-Type: text/plain
+Content-Length: 137582
+Expires: Thu, 05 Dec 1997 16:00:00 GMT
+Last-Modified: Wed, 5 August 1996 15:55:28 GMT
+Server: Apache 0.84
+
+&lt;html&gt;
+  &lt;body&gt;Hello World&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h4 id="HTTP首部字段"><a href="#HTTP首部字段" class="headerlink" title="HTTP首部字段"></a>HTTP首部字段</h4><ul>
+<li><p>Content-Type / Accept<br>1.0版本规定，头信息是asscii码，后面的信息可以任何格式，因此服务器回应的时候必须告诉客户端，数据是什么格式，这就是Conntent-Type的作用。常见的Content-Type字段值如下</p>
+<pre><code>text/plain
+text/html
+text/css
+image/jpeg
+image/png
+image/svg+xml
+audio/mp4
+video/mp4
+application/javascript
+application/pdf
+application/zip
+application/atom+xml  
+</code></pre><p>这些数据类型总称为<strong>MIME type,</strong>每个值，每个值包括一级类型和二级类型，之间用斜杠分隔。MIME type还可以在尾部使用分号，添加参数。</p>
+<p>  Content-Type: text/html; charset=utf-8</p>
+</li>
+</ul>
+<ul>
+<li><p>Connection<br>HTTP/1.0 版的主要缺点是，每个TCP连接只能发送一个请求。发送数据完毕，连接就关闭，如果还要请求其他资源，就必须再新建一个连接。<br>TCP连接的新建成本很高，因为需要客户端和服务器三次握手，并且开始时发送速率较慢（slow start）。所以，HTTP 1.0版本的性能比较差。随着网页加载的外部资源越来越多，这个问题就愈发突出了。<br>为了解决这个问题，有些浏览器在请求时，用了一个非标准的Connection字段。</p>
+<pre><code>Connection: keep-alive
+</code></pre><p>这个字段要求服务器不要关闭TCP连接，以便其他请求可以复用。服务器同样回应这个字段。</p>
+<pre><code>Connection: keep-alive
+</code></pre><p>HTTP/1.1引入了持久连接，TCP连接默认不关闭，不用声明</p>
+</li>
+<li><p>Content-Encoding / Accept-Encoding<br>由于发送的数据可以是任何格式，因此可以把数据压缩后再发送。Content-Encoding字段说明数据的压缩方法。</p>
+</li>
+</ul>
+<h4 id="HTTP服务-socket简单实现"><a href="#HTTP服务-socket简单实现" class="headerlink" title="HTTP服务 socket简单实现"></a>HTTP服务 socket简单实现</h4><pre><code>//
+//  main.c
+//  HTTPSocketServer
+//
+//  Created by xufan on 2017/7/13.
+//  Copyright © 2017年 xufan. All rights reserved.
+//
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/event.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/time.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#define BACKLOG 5 //完成三次握手但没有accept的队列的长度
+#define CONCURRENT_MAX 8 //应用层同时可以处理的连接
+#define SERVER_PORT 1024
+#define BUFFER_SIZE 1024
+#define QUIT_CMD &quot;.quit&quot;
+int client_fds[CONCURRENT_MAX];
+struct kevent events[10];//CONCURRENT_MAX + 2
+
+void sendHello();
+
+int main (int argc, const char * argv[])
+{
+//    sendHello();
+//    return 0;
+    char input_msg[BUFFER_SIZE];
+    char recv_msg[BUFFER_SIZE];
+    //本地地址
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(SERVER_PORT);
+    server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;);
+    bzero(&amp;(server_addr.sin_zero),8);
+    //创建socket
+    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_fd == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }else {
+        printf(&quot;socket success\n&quot;);
+    }
+
+    int flag =1;
+    /**/if( setsockopt(server_sock_fd, SOL_SOCKET, SO_REUSEADDR, &amp;flag, sizeof(int)) == -1)
+    {
+        perror(&quot;setsockopt&quot;);
+        exit(1);
+    }
+    //绑定socket
+    int bind_result = bind(server_sock_fd, (struct sockaddr *)&amp;server_addr, sizeof(server_addr));
+    if (bind_result == -1) {
+        perror(&quot;bind error&quot;);
+        return 1;
+    }else {
+        printf(&quot;bind success\n&quot;);
+    }
+    //listen
+    if (listen(server_sock_fd, BACKLOG) == -1) {
+        perror(&quot;listen error&quot;);
+        return 1;
+    }else {
+        printf(&quot;listen success\n&quot;);
+    }
+    struct timespec timeout = {10,0};
+    //kqueue
+    int kq = kqueue();
+    if (kq == -1) {
+        perror(&quot;创建kqueue出错!\n&quot;);
+        exit(1);
+    }
+    struct kevent event_change;
+    EV_SET(&amp;event_change, STDIN_FILENO, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+    EV_SET(&amp;event_change, server_sock_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+    while (1) {
+        int ret = kevent(kq, NULL, 0, events, 10, &amp;timeout);
+        if (ret &lt; 0) {
+            printf(&quot;kevent 出错!\n&quot;);
+            continue;
+        }else if(ret == 0){
+            printf(&quot;kenvent 超时!\n&quot;);
+            continue;
+        }else{
+            //ret &gt; 0 返回事件放在events中
+            for (int i = 0; i &lt; ret; i++) {
+                struct kevent current_event = events[i];
+                //kevent中的ident就是文件描述符
+                if (current_event.ident == STDIN_FILENO) {
+                    //标准输入
+                    bzero(input_msg, BUFFER_SIZE);
+                    fgets(input_msg, BUFFER_SIZE, stdin);
+                    //输入 &quot;.quit&quot; 则退出服务器
+                    if (strcmp(input_msg, QUIT_CMD) == 0) {
+                        exit(0);
+                    }
+                    for (int i=0; i&lt;CONCURRENT_MAX; i++) {
+                        if (client_fds[i]!=0) {
+                            send(client_fds[i], input_msg, BUFFER_SIZE, 0);
+                        }
+                    }
+                }else if(current_event.ident == server_sock_fd){
+                    //有新的连接请求
+                    struct sockaddr_in client_address;
+                    socklen_t address_len;
+                    int client_socket_fd = accept(server_sock_fd, (struct sockaddr *)&amp;client_address, &amp;address_len);
+                    if (client_socket_fd &gt; 0) {
+                        int index = -1;
+                        for (int i = 0; i &lt; CONCURRENT_MAX; i++) {
+                            if (client_fds[i] == 0) {
+                                index = i;
+                                client_fds[i] = client_socket_fd;
+                                break;
+                            }
+                        }
+                        if (index &gt;= 0) {
+                            EV_SET(&amp;event_change, client_socket_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+                            kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+                            printf(&quot;新客户端(fd = %d)加入成功 %s:%d \n&quot;,client_socket_fd,inet_ntoa(client_address.sin_addr),ntohs(client_address.sin_port));
+                        }else{
+                            bzero(input_msg, BUFFER_SIZE);
+                            strcpy(input_msg, &quot;服务器加入的客户端数达到最大值,无法加入!\n&quot;);
+                            send(client_socket_fd, input_msg, BUFFER_SIZE, 0);
+                            printf(&quot;客户端连接数达到最大值，新客户端加入失败 %s:%d \n&quot;,inet_ntoa(client_address.sin_addr),ntohs(client_address.sin_port));
+                        }
+                    }
+                }else{
+                    //处理某个客户端过来的消息
+                    bzero(recv_msg, BUFFER_SIZE);
+                    long byte_num = recv((int)current_event.ident,recv_msg,BUFFER_SIZE,0);
+                    if (byte_num &gt; 0) {
+                        if (byte_num &gt; BUFFER_SIZE) {
+                            byte_num = BUFFER_SIZE;
+                        }
+                        recv_msg[byte_num] = &apos;\0&apos;;
+                        printf(&quot;客户端(fd = %d):%s&quot;,(int)current_event.ident,recv_msg);
+                        // 发送响应报文
+                        sendHello((int)current_event.ident);
+                    }else if(byte_num &lt; 0){
+                        printf(&quot;从客户端(fd = %d)接受消息出错.\n&quot;,(int)current_event.ident);
+                    }else{
+                        EV_SET(&amp;event_change, current_event.ident, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+                        kevent(kq, &amp;event_change, 1, NULL, 0, NULL);
+                        close((int)current_event.ident);
+                        for (int i = 0; i &lt; CONCURRENT_MAX; i++) {
+                            if (client_fds[i] == (int)current_event.ident) {
+                                client_fds[i] = 0;
+                                break;
+                            }
+                        }
+                        printf(&quot;客户端(fd = %d)退出了\n&quot;,(int)current_event.ident);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+void sendHello(int fd)
+{
+    time_t rawtime = 0;
+    time(&amp;rawtime);
+    char statusCode[] = &quot;HTTP/1.1 200 OK\r\n&quot;;
+    char server[]=&quot;Server: localhost\r\n&quot;;
+    char header[] = &quot;Content-Type: text/html\r\n&quot;;
+    char contentLength[50]=&quot;Content-Length: &quot;;
+    char date[100] ={0};
+    sprintf(date, &quot;Date: %s\r\n&quot;,ctime(&amp;rawtime));
+
+    char content[] = &quot;\r\n&lt;html&gt;&lt;body&gt;Hello World&lt;/body&gt;&lt;/html&gt;\r\n&quot;;
+    sprintf(contentLength, &quot;%s%ld\r\n&quot;,contentLength,strlen(content));
+    char res[1024]={0};
+    sprintf(res, &quot;%s%s%s%s%s%s&quot;,statusCode,server,header,contentLength,date,content);
+
+//    printf(&quot;%s&quot;,res);
+    send(fd, res, strlen(res), 0);
+}
+</code></pre><p>参考：<br><a href="http://www.ruanyifeng.com/blog/2016/08/http.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2016/08/http.html</a><br><a href="https://hit-alibaba.github.io/interview/basic/network/HTTP.html" target="_blank" rel="external">https://hit-alibaba.github.io/interview/basic/network/HTTP.html</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/socket/" rel="tag"># socket</a>
+          
+            <a href="/tags/HTTP/" rel="tag"># HTTP</a>
+          
+            <a href="/tags/网络/" rel="tag"># 网络</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/13/socket-basic/" rel="next" title="socket">
+                <i class="fa fa-chevron-left"></i> socket
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/17564857?v=3&s=460"
+               alt="xufan" />
+          <p class="site-author-name" itemprop="name">xufan</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/curtain521517" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xufan123123" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                  csdn
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP"><span class="nav-number">1.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP协议"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP请求报文"><span class="nav-number">1.1.1.</span> <span class="nav-text">HTTP请求报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP响应报文"><span class="nav-number">1.1.2.</span> <span class="nav-text">HTTP响应报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP首部字段"><span class="nav-number">1.1.3.</span> <span class="nav-text">HTTP首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP服务-socket简单实现"><span class="nav-number">1.1.4.</span> <span class="nav-text">HTTP服务 socket简单实现</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xufan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
