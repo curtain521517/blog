@@ -100,7 +100,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/14/HTTP协议/index.html">
 <meta property="og:site_name" content="小海">
 <meta property="og:description" content="HTTPHTTP协议http协议是应用层协议，它建立在传输层之上,默认端口80，客户端向服务器发送请求，服务器收到请求之后，对其内容进行解析并向客户端回送一个响应 HTTP请求报文HTTP请求分三个部份：状态行，请求头，消息主体。类似下在这样： &amp;lt;method&amp;gt; &amp;lt;request-URL&amp;gt; &amp;lt;version&amp;gt; &amp;lt;headers&amp;gt; /r/n(这是一个空">
-<meta property="og:updated_time" content="2017-07-17T06:07:44.000Z">
+<meta property="og:updated_time" content="2017-07-20T10:47:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTP服务 socket的简单实现">
 <meta name="twitter:description" content="HTTPHTTP协议http协议是应用层协议，它建立在传输层之上,默认端口80，客户端向服务器发送请求，服务器收到请求之后，对其内容进行解析并向客户端回送一个响应 HTTP请求报文HTTP请求分三个部份：状态行，请求头，消息主体。类似下在这样： &amp;lt;method&amp;gt; &amp;lt;request-URL&amp;gt; &amp;lt;version&amp;gt; &amp;lt;headers&amp;gt; /r/n(这是一个空">
@@ -625,6 +625,94 @@ void sendHello(int fd)
 //    printf(&quot;%s&quot;,res);
     send(fd, res, strlen(res), 0);
 }
+</code></pre><h4 id="HTTP-GET-客户端的简单实现"><a href="#HTTP-GET-客户端的简单实现" class="headerlink" title="HTTP GET 客户端的简单实现"></a>HTTP GET 客户端的简单实现</h4><pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/event.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/time.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;sys/fcntl.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+
+
+#define BUFFER_SIZE 4096
+#define PORT 80
+#define SERVERADDR &quot;101.37.225.65&quot;
+
+struct kevent events[2];
+
+int sendHTTPGet(int fd);
+
+int main (int argc, const char * argv[])
+{
+    struct sockaddr_in server_addr;
+    server_addr.sin_len = sizeof(struct sockaddr_in);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = inet_addr(SERVERADDR);
+    bzero(&amp;(server_addr.sin_zero),8);
+
+    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_fd == -1) {
+        perror(&quot;socket error&quot;);
+        return 1;
+    }
+    char recv_msg[BUFFER_SIZE];
+
+    if (connect(server_sock_fd, (struct sockaddr *)&amp;server_addr, sizeof(struct sockaddr_in))==0) {
+        printf(&quot;连接主机成功&quot;);
+
+        sendHTTPGet(server_sock_fd);
+
+        //int flags = fcntl(server_sock_fd, F_GETFL, 0);
+        //if (fcntl(server_sock_fd, F_SETFL, flags | O_NONBLOCK) &lt; 0)
+        //{
+        //    perror(&quot;设置非阻塞失败\n&quot;);
+        //}
+
+        //读取服务器返回来的数据
+
+
+
+        long byte_num = 0;
+        long rec = 1;
+        while (rec &gt; 0) {
+            bzero(recv_msg, BUFFER_SIZE);
+
+            rec = read(server_sock_fd, recv_msg, BUFFER_SIZE);
+            byte_num += rec;
+            printf(&quot;%s&quot;,recv_msg);
+        }
+        if (rec == 0) {
+            printf(&quot;数据接收完毕:%ld\n&quot;,byte_num);
+        }
+        //printf(&quot;\nbyte:%ld&quot;,byte_num);
+        return 0;
+
+
+    }
+
+}
+
+int sendHTTPGet(int fd)
+{
+    int ret = 0;
+    char request[2048]={0};
+
+    strcat(request, &quot;GET / HTTP/1.1\n&quot;);
+    strcat(request, &quot;Host:101.37.225.65\n&quot;);
+    strcat(request, &quot;Connection:Keep-Alive\n&quot;);
+    strcat(request, &quot;Accept:text/html\n&quot;);
+    strcat(request, &quot;\r\n&quot;);
+
+    printf(&quot;%s&quot;,request);
+
+    ret = (int)send(fd, request, strlen(request), 0);
+    return ret;
+}
 </code></pre><p>参考：<br><a href="http://www.ruanyifeng.com/blog/2016/08/http.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2016/08/http.html</a><br><a href="https://hit-alibaba.github.io/interview/basic/network/HTTP.html" target="_blank" rel="external">https://hit-alibaba.github.io/interview/basic/network/HTTP.html</a></p>
 
       
@@ -830,7 +918,7 @@ void sendHello(int fd)
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP"><span class="nav-number">1.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP协议"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP请求报文"><span class="nav-number">1.1.1.</span> <span class="nav-text">HTTP请求报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP响应报文"><span class="nav-number">1.1.2.</span> <span class="nav-text">HTTP响应报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP首部字段"><span class="nav-number">1.1.3.</span> <span class="nav-text">HTTP首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP服务-socket简单实现"><span class="nav-number">1.1.4.</span> <span class="nav-text">HTTP服务 socket简单实现</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP"><span class="nav-number">1.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP协议"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP请求报文"><span class="nav-number">1.1.1.</span> <span class="nav-text">HTTP请求报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP响应报文"><span class="nav-number">1.1.2.</span> <span class="nav-text">HTTP响应报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP首部字段"><span class="nav-number">1.1.3.</span> <span class="nav-text">HTTP首部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP服务-socket简单实现"><span class="nav-number">1.1.4.</span> <span class="nav-text">HTTP服务 socket简单实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP-GET-客户端的简单实现"><span class="nav-number">1.1.5.</span> <span class="nav-text">HTTP GET 客户端的简单实现</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

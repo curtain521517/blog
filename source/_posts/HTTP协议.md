@@ -302,6 +302,97 @@ TCP连接的新建成本很高，因为需要客户端和服务器三次握手�
 	    send(fd, res, strlen(res), 0);
 	}
 
+#### HTTP GET 客户端的简单实现
+
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <netinet/in.h>
+	#include <sys/socket.h>
+	#include <sys/event.h>
+	#include <sys/types.h>
+	#include <sys/time.h>
+	#include <arpa/inet.h>
+	#include <sys/fcntl.h>
+	#include <string.h>
+	#include <unistd.h>
+	
+	
+	#define BUFFER_SIZE 4096
+	#define PORT 80
+	#define SERVERADDR "101.37.225.65"
+	
+	struct kevent events[2];
+	
+	int sendHTTPGet(int fd);
+	
+	int main (int argc, const char * argv[])
+	{
+	    struct sockaddr_in server_addr;
+	    server_addr.sin_len = sizeof(struct sockaddr_in);
+	    server_addr.sin_family = AF_INET;
+	    server_addr.sin_port = htons(PORT);
+	    server_addr.sin_addr.s_addr = inet_addr(SERVERADDR);
+	    bzero(&(server_addr.sin_zero),8);
+	    
+	    int server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+	    if (server_sock_fd == -1) {
+	        perror("socket error");
+	        return 1;
+	    }
+	    char recv_msg[BUFFER_SIZE];
+	    
+	    if (connect(server_sock_fd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in))==0) {
+	        printf("连接主机成功");
+	        
+	        sendHTTPGet(server_sock_fd);
+	        
+	        //int flags = fcntl(server_sock_fd, F_GETFL, 0);
+	        //if (fcntl(server_sock_fd, F_SETFL, flags | O_NONBLOCK) < 0)
+	        //{
+	        //    perror("设置非阻塞失败\n");
+	        //}
+	        
+	        //读取服务器返回来的数据
+	        
+	
+	        
+	        long byte_num = 0;
+	        long rec = 1;
+	        while (rec > 0) {
+	            bzero(recv_msg, BUFFER_SIZE);
+	
+	            rec = read(server_sock_fd, recv_msg, BUFFER_SIZE);
+	            byte_num += rec;
+	            printf("%s",recv_msg);
+	        }
+	        if (rec == 0) {
+	            printf("数据接收完毕:%ld\n",byte_num);
+	        }
+	        //printf("\nbyte:%ld",byte_num);
+	        return 0;
+	        
+	   
+	    }
+	    
+	}
+	
+	int sendHTTPGet(int fd)
+	{
+	    int ret = 0;
+	    char request[2048]={0};
+	
+	    strcat(request, "GET / HTTP/1.1\n");
+	    strcat(request, "Host:101.37.225.65\n");
+	    strcat(request, "Connection:Keep-Alive\n");
+	    strcat(request, "Accept:text/html\n");
+	    strcat(request, "\r\n");
+	    
+	    printf("%s",request);
+	    
+	    ret = (int)send(fd, request, strlen(request), 0);
+	    return ret;
+	}
+
 
 
 参考：  
